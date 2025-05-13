@@ -1,0 +1,271 @@
+/* Planet Fitness barcode generator styles */
+.barcodeGenerator {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.barcodeGenerator h2 {
+  color: var(--secondary-color);
+  margin-bottom: 1.5rem;
+  font-size: 1.4rem;
+}
+
+.barcodeContainer {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 1rem;
+  background-color: white;
+  border-radius: var(--border-radius);
+  width: 100%;
+  max-width: 400px;
+}
+
+.barcodeContainer svg {
+  max-width: 100%;
+  height: auto;
+}
+
+.timestamp {
+  margin-top: 1rem;
+  text-align: center;
+  font-size: 0.9rem;
+  color: var(--text-color);
+  opacity: 0.7;
+}
+
+.refreshNote {
+  font-style: italic;
+  font-size: 0.8rem;
+}
+
+.memberId {
+  margin-top: 0.5rem;
+  text-align: center;
+  font-size: 1rem;
+  font-weight: bold;
+  color: var(--primary-color);
+}
+
+.loading {
+  padding: 2rem;
+  text-align: center;
+  color: var(--text-color);
+}
+
+/* Planet Fitness membership card styles */
+.membershipCard {
+  width: 100%;
+  max-width: 400px;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 1rem;
+  background-color: #2e1a47;
+  color: white;
+  font-family: 'Barlow', sans-serif;
+  position: relative;
+}
+
+.header {
+  display: flex;
+  align-items: center;
+  width: 100%;
+  padding: 0.5rem 0;
+  position: relative;
+}
+
+.backButton {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background-color: rgba(255, 255, 255, 0.2);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  position: absolute;
+  left: 0;
+}
+
+.backButton span {
+  font-size: 1.5rem;
+  color: white;
+}
+
+.header h2 {
+  flex: 1;
+  text-align: center;
+  font-size: 1.2rem;
+  font-weight: normal;
+  margin: 0;
+}
+
+.memberInfo {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin: 1rem 0;
+}
+
+.memberInfo h1 {
+  font-size: 2rem;
+  margin: 0.5rem 0;
+  font-weight: bold;
+  text-align: center;
+  font-family: 'Barlow', sans-serif;
+}
+
+.date {
+  font-size: 1.2rem;
+  opacity: 0.9;
+  margin: 0.25rem 0;
+}
+
+.qrCodeContainer {
+  position: relative;
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin: 1rem 0;
+}
+
+/* Cog styles */
+.cogTopRight, .cogTopLeft, .cogBottomRight {
+  position: absolute;
+  width: 90px;
+  height: 90px;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%236a3dc8'%3E%3Cpath d='M19.14 12.94c.04-.3.06-.61.06-.94 0-.32-.02-.64-.07-.94l2.03-1.58c.18-.14.23-.41.12-.61l-1.92-3.32c-.12-.22-.37-.29-.59-.22l-2.39.96c-.5-.38-1.03-.7-1.62-.94l-.36-2.54c-.04-.24-.24-.41-.48-.41h-3.84c-.24 0-.43.17-.47.41l-.36 2.54c-.59.24-1.13.57-1.62.94l-2.39-.96c-.22-.08-.47 0-.59.22L2.74 8.87c-.12.21-.08.47.12.61l2.03 1.58c-.05.3-.09.63-.09.94s.02.64.07.94l-2.03 1.58c-.18.14-.23.41-.12.61l1.92 3.32c.12.22.37.29.59.22l2.39-.96c.5.38 1.03.7 1.62.94l.36 2.54c.05.24.24.41.48.41h3.84c.24 0 .44-.17.47-.41l.36-2.54c.59-.24 1.13-.56 1.62-.94l2.39.96c.22.08.47 0 .59-.22l1.92-3.32c.12-.22.07-.47-.12-.61l-2.01-1.58zM12 15.6c-1.98 0-3.6-1.62-3.6-3.6s1.62-3.6 3.6-3.6 3.6 1.62 3.6 3.6-1.62 3.6-3.6 3.6z'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: center;
+  background-size: contain;
+  z-index: 5;
+}
+
+.cogTopRight {
+  top: -35px;
+  right: 30px;
+  animation: spin 8s linear infinite;
+}
+
+.cogTopLeft {
+  top: 60px;
+  left: 0px;
+  animation: spin-reverse 12s linear infinite;
+}
+
+.cogBottomRight {
+  bottom: -20px;
+  right: 40px;
+  animation: spin 10s linear infinite;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+@keyframes spin-reverse {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(-360deg); }
+}
+
+.qrCodeWrapper {
+  background-color: white;
+  padding: 1rem;
+  border-radius: 8px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  position: relative;
+  z-index: 10;
+}
+
+.qrCode {
+  display: block;
+  max-width: 100%;
+}
+
+/* QR code center logo overlay */
+.qrCodeWrapper::after {
+  content: '';
+  position: absolute;
+  width: 60px;
+  height: 60px;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ccircle cx='50' cy='50' r='45' fill='%236a3dc8' /%3E%3Cpath d='M34 40h32v4H34z' fill='white'/%3E%3Cpath d='M34 48h32v4H34z' fill='white'/%3E%3Cpath d='M34 56h32v4H34z' fill='white'/%3E%3C/svg%3E");
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  z-index: 11;
+  box-shadow: 0 0 0 4px #6a3dc8;
+  border-radius: 50%;
+}
+
+.memberId {
+  font-size: 1.2rem;
+  letter-spacing: 1px;
+  margin: 1.5rem 0 1rem;
+  font-weight: 600;
+  color: white;
+}
+
+.membershipInfo {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-bottom: 1.5rem;
+}
+
+.cardType {
+  font-size: 2rem;
+  margin: 0 0 0.25rem 0;
+  font-weight: bold;
+  font-family: 'Merriweather', serif;
+}
+
+.membershipInfo h3 {
+  display: none;
+}
+
+.message {
+  font-size: 1.1rem;
+  text-align: center;
+  margin: 1rem 0 2rem;
+  font-family: 'Barlow', sans-serif;
+}
+
+.referButton {
+  width: 100%;
+  padding: 1rem;
+  background-color: #eec800;
+  color: #2e1a47;
+  border: none;
+  border-radius: 50px;
+  font-size: 1.2rem;
+  font-weight: bold;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-top: auto;
+  cursor: pointer;
+  font-family: 'Barlow', sans-serif;
+}
+
+.loading {
+  padding: 2rem;
+  text-align: center;
+  color: #2e1a47;
+}
+
+.membershipText {
+  font-size: 1.5rem;
+  margin: 0;
+  font-weight: normal;
+  font-family: 'Merriweather', serif;
+}
