@@ -7,10 +7,6 @@
       "statusCode": 404
     },
     {
-      "route": "/*",
-      "allowedRoles": ["authenticated"]
-    },
-    {
       "route": "/login",
       "rewrite": "/.auth/login/github"
     },
@@ -19,6 +15,10 @@
       "headers": {
         "cache-control": "must-revalidate, max-age=15770000"
       }
+    },
+    {
+      "route": "/*",
+      "allowedRoles": ["authenticated"]
     }
   ],
   "navigationFallback": {
