@@ -1,7 +1,7 @@
-import React, { useState, useEffect, useCallback } from "react";
+import type React from "react";
+import { useCallback, useEffect, useState } from "react";
 import QRCode from "react-qr-code";
 import styles from "./QRCodeGenerator.module.css";
-import { formatCurrentDate, formatTimeForQrCodeInUTC } from "../utils/qrCodeUtils";
 
 // Constants
 const REFRESH_INTERVAL_MS = 30 * 60 * 1000; // 30 minutes in milliseconds
@@ -55,8 +55,6 @@ const QRCodeGenerator: React.FC = () => {
         const value = `${memberId}/mobile/${formattedTimeForQr}`;
         setQrValue(value);
         setLastGenerated(Date.now());
-
-        console.log("Generated QR code value with UTC timestamp:", value);
       }
     } catch (error) {
       console.error("Error generating QR code value:", error);
@@ -149,7 +147,7 @@ const QRCodeGenerator: React.FC = () => {
         Have an awesome workout, Chris! You got this!
       </p>
 
-      <button className={styles.referButton}>
+      <button type="button" className={styles.referButton}>
         <span className={styles.referIcon}>👥</span> Refer a Friend
       </button>
     </div>

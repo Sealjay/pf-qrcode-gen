@@ -44,6 +44,7 @@ The timestamp refreshes every 30 minutes to ensure security while allowing enoug
 - CSS Modules
 - Azure Static Web Apps
 - react-qr-code library
+- Biome (linting and formatting)
 
 ## Licensing
 This project is available under the [MIT License](./LICENCE).

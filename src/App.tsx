@@ -1,6 +1,6 @@
-import React from "react";
-import styles from "./App.module.css";
-import QRCodeGenerator from "./components/QRCodeGenerator";
+import type React from 'react';
+import styles from './App.module.css';
+import QRCodeGenerator from './components/QRCodeGenerator';
 
 const App: React.FC = () => {
   return (
