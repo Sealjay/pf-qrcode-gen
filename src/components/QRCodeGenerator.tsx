@@ -13,6 +13,7 @@ const QRCodeGenerator: React.FC<QRCodeGeneratorProps> = () => {
   const [currentDate, setCurrentDate] = useState<string>("");
   const [memberId] = useState<string>("MEMBER_ID");
   const [name] = useState<string>("Chris Lloyd-Jones");
+  const [lastGenerated, setLastGenerated] = useState<number>(Date.now());
 
   // Function to format the current date (Month DD, YYYY)
   const formatCurrentDate = (): string => {
@@ -47,6 +48,7 @@ const QRCodeGenerator: React.FC<QRCodeGeneratorProps> = () => {
       const formattedTimeForQr = formatTimeForQrCodeInUTC();
       const value = `${memberId}/mobile/${formattedTimeForQr}`;
       setQrValue(value);
+      setLastGenerated(Date.now());
 
       console.log("Generated QR code value with UTC timestamp:", value);
     } catch (error) {
@@ -61,12 +63,15 @@ const QRCodeGenerator: React.FC<QRCodeGeneratorProps> = () => {
 
     // Update every minute
     const intervalId = setInterval(() => {
-      generateQrValue();
+      const now = Date.now();
+      if (now - lastGenerated > 30 * 60 * 1000) {
+        generateQrValue();
+      }
     }, 60000);
 
     // Clean up interval on component unmount
     return () => clearInterval(intervalId);
-  }, []);
+  }, [lastGenerated]);
 
   return (
     <div className={styles.membershipCard}>
