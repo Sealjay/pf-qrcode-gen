@@ -1,14 +1,11 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import QRCode from "react-qr-code";
 import styles from "./QRCodeGenerator.module.css";
 
-// Props interface for the QR code component
-interface QRCodeGeneratorProps {
-  config: any;
-  onConfigChange: (updatedConfig: any) => void;
-}
+// Constants
+const REFRESH_INTERVAL_MS = 30 * 60 * 1000; // 30 minutes in milliseconds
 
-const QRCodeGenerator: React.FC<QRCodeGeneratorProps> = () => {
+const QRCodeGenerator: React.FC = () => {
   const [qrValue, setQrValue] = useState<string>("");
   const [currentDate, setCurrentDate] = useState<string>("");
   const [memberId] = useState<string>("MEMBER_ID");
@@ -16,17 +13,17 @@ const QRCodeGenerator: React.FC<QRCodeGeneratorProps> = () => {
   const [lastGenerated, setLastGenerated] = useState<number>(Date.now());
 
   // Function to format the current date (Month DD, YYYY)
-  const formatCurrentDate = (): string => {
+  const formatCurrentDate = useCallback((): string => {
     const now = new Date();
     return now.toLocaleDateString("en-US", {
       month: "long",
       day: "numeric",
       year: "numeric",
     });
-  };
+  }, []);
 
   // Function to format the current time for QR code data in UTC
-  const formatTimeForQrCodeInUTC = (): string => {
+  const formatTimeForQrCodeInUTC = useCallback((): string => {
     const now = new Date();
     const month = String(now.getUTCMonth() + 1).padStart(2, "0");
     const day = String(now.getUTCDate()).padStart(2, "0");
@@ -36,45 +33,54 @@ const QRCodeGenerator: React.FC<QRCodeGeneratorProps> = () => {
     const seconds = String(now.getUTCSeconds()).padStart(2, "0");
 
     return `${month}${day}${year}-${hours}${minutes}${seconds}`;
-  };
+  }, []);
 
   // Function to check if the last generated time is more than 30 minutes ago
-  const shouldGenerateNewQr = (): boolean => {
+  const isQrCodeExpired = useCallback((): boolean => {
     const now = Date.now();
-    return now - lastGenerated > 30 * 60 * 1000;
-  };
+    return now - lastGenerated > REFRESH_INTERVAL_MS;
+  }, [lastGenerated]);
 
   // Generate the QR code value with UTC timestamp
-  const generateQrValue = (): void => {
+  const generateQrValue = useCallback((): void => {
     try {
-      const formattedDate = formatCurrentDate();
-      setCurrentDate(formattedDate);
+      // Only regenerate if it's time to do so
+      if (!qrValue || isQrCodeExpired()) {
+        const formattedDate = formatCurrentDate();
+        setCurrentDate(formattedDate);
 
-      // Format: MEMBER_ID/mobile/05132025-162158 (now using UTC)
-      const formattedTimeForQr = formatTimeForQrCodeInUTC();
-      const value = `${memberId}/mobile/${formattedTimeForQr}`;
-      setQrValue(value);
-      setLastGenerated(Date.now());
+        // Format: MEMBER_ID/mobile/05132025-162158 (now using UTC)
+        const formattedTimeForQr = formatTimeForQrCodeInUTC();
+        const value = `${memberId}/mobile/${formattedTimeForQr}`;
+        setQrValue(value);
+        setLastGenerated(Date.now());
 
-      console.log("Generated QR code value with UTC timestamp:", value);
+        console.log("Generated QR code value with UTC timestamp:", value);
+      }
     } catch (error) {
       console.error("Error generating QR code value:", error);
     }
-  };
+  }, [
+    formatCurrentDate,
+    formatTimeForQrCodeInUTC,
+    isQrCodeExpired,
+    memberId,
+    qrValue,
+  ]);
 
   // Event handler for visibility change
-  const handleVisibilityChange = (): void => {
-    if (document.visibilityState === "visible" && shouldGenerateNewQr()) {
+  const handleVisibilityChange = useCallback((): void => {
+    if (document.visibilityState === "visible" && isQrCodeExpired()) {
       generateQrValue();
     }
-  };
+  }, [generateQrValue, isQrCodeExpired]);
 
   // Event handler for focus
-  const handleFocus = (): void => {
-    if (shouldGenerateNewQr()) {
+  const handleFocus = useCallback((): void => {
+    if (isQrCodeExpired()) {
       generateQrValue();
     }
-  };
+  }, [generateQrValue, isQrCodeExpired]);
 
   // Initialize QR code and set up refresh interval
   useEffect(() => {
@@ -82,11 +88,7 @@ const QRCodeGenerator: React.FC<QRCodeGeneratorProps> = () => {
     generateQrValue();
 
     // Update every 30 minutes
-    const intervalId = setInterval(() => {
-      if (shouldGenerateNewQr()) {
-        generateQrValue();
-      }
-    }, 30 * 60 * 1000);
+    const intervalId = setInterval(generateQrValue, REFRESH_INTERVAL_MS);
 
     // Add event listeners for visibility change and focus
     document.addEventListener("visibilitychange", handleVisibilityChange);
@@ -98,7 +100,7 @@ const QRCodeGenerator: React.FC<QRCodeGeneratorProps> = () => {
       document.removeEventListener("visibilitychange", handleVisibilityChange);
       window.removeEventListener("focus", handleFocus);
     };
-  }, [lastGenerated]);
+  }, [generateQrValue, handleVisibilityChange, handleFocus]); // Added dependencies
 
   return (
     <div className={styles.membershipCard}>
@@ -115,9 +117,9 @@ const QRCodeGenerator: React.FC<QRCodeGeneratorProps> = () => {
       </div>
 
       <div className={styles.qrCodeContainer}>
-        <div className={styles.cogTopRight}></div>
-        <div className={styles.cogTopLeft}></div>
-        <div className={styles.cogBottomRight}></div>
+        <div className={styles.cogTopRight} />
+        <div className={styles.cogTopLeft} />
+        <div className={styles.cogBottomRight} />
 
         <div className={styles.qrCodeWrapper}>
           {qrValue ? (

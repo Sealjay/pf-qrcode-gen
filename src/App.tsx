@@ -5,7 +5,7 @@ import QRCodeGenerator from "./components/QRCodeGenerator";
 const App: React.FC = () => {
   return (
     <div className={styles.container}>
-      <QRCodeGenerator config={{} as any} onConfigChange={() => {}} />
+      <QRCodeGenerator />
     </div>
   );
 };
