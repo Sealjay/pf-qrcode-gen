@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useCallback } from "react";
 import QRCode from "react-qr-code";
 import styles from "./QRCodeGenerator.module.css";
+import { formatCurrentDate, formatTimeForQrCodeInUTC } from "../utils/qrCodeUtils";
 
 // Constants
 const REFRESH_INTERVAL_MS = 30 * 60 * 1000; // 30 minutes in milliseconds
