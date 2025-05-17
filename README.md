@@ -79,7 +79,7 @@ This project is available under the [MIT License](./LICENCE).
    swa start
    ```
 
-4. Open [http://localhost:3000](http://localhost:3000) in your browser
+4. Open [http://localhost:5173](http://localhost:5173) in your browser if you are using Vite, or [http://localhost:4280](http://localhost:4280) if you are using the SWA CLI.
 
 ## Deployment
 This app is set up to deploy to Azure Static Web Apps. The GitHub Actions workflow will handle deployment when changes are pushed to the main branch.
