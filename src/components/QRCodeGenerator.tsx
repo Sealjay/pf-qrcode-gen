@@ -56,6 +56,18 @@ const QRCodeGenerator: React.FC<QRCodeGeneratorProps> = () => {
     }
   };
 
+  // Event handler for visibility change
+  const handleVisibilityChange = (): void => {
+    if (document.visibilityState === "visible") {
+      generateQrValue();
+    }
+  };
+
+  // Event handler for focus
+  const handleFocus = (): void => {
+    generateQrValue();
+  };
+
   // Initialize QR code and set up refresh interval
   useEffect(() => {
     // Generate initial QR code
@@ -69,8 +81,16 @@ const QRCodeGenerator: React.FC<QRCodeGeneratorProps> = () => {
       }
     }, 60000);
 
-    // Clean up interval on component unmount
-    return () => clearInterval(intervalId);
+    // Add event listeners for visibility change and focus
+    document.addEventListener("visibilitychange", handleVisibilityChange);
+    window.addEventListener("focus", handleFocus);
+
+    // Clean up interval and event listeners on component unmount
+    return () => {
+      clearInterval(intervalId);
+      document.removeEventListener("visibilitychange", handleVisibilityChange);
+      window.removeEventListener("focus", handleFocus);
+    };
   }, [lastGenerated]);
 
   return (
