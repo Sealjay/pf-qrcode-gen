@@ -1,37 +1,37 @@
-import type React from "react";
-import { useCallback, useEffect, useState } from "react";
-import QRCode from "react-qr-code";
-import styles from "./QRCodeGenerator.module.css";
+import type React from 'react';
+import { useCallback, useEffect, useState } from 'react';
+import QRCode from 'react-qr-code';
+import styles from './QRCodeGenerator.module.css';
 
 // Constants
 const REFRESH_INTERVAL_MS = 30 * 60 * 1000; // 30 minutes in milliseconds
 
 const QRCodeGenerator: React.FC = () => {
-  const [qrValue, setQrValue] = useState<string>("");
-  const [currentDate, setCurrentDate] = useState<string>("");
-  const [memberId] = useState<string>("MEMBER_ID");
-  const [name] = useState<string>("Chris Lloyd-Jones");
+  const [qrValue, setQrValue] = useState<string>('');
+  const [currentDate, setCurrentDate] = useState<string>('');
+  const [memberId] = useState<string>('MEMBER_ID');
+  const [name] = useState<string>('Chris Lloyd-Jones');
   const [lastGenerated, setLastGenerated] = useState<number>(Date.now());
 
   // Function to format the current date (Month DD, YYYY)
   const formatCurrentDate = useCallback((): string => {
     const now = new Date();
-    return now.toLocaleDateString("en-US", {
-      month: "long",
-      day: "numeric",
-      year: "numeric",
+    return now.toLocaleDateString('en-US', {
+      month: 'long',
+      day: 'numeric',
+      year: 'numeric',
     });
   }, []);
 
   // Function to format the current time for QR code data in UTC
   const formatTimeForQrCodeInUTC = useCallback((): string => {
     const now = new Date();
-    const month = String(now.getUTCMonth() + 1).padStart(2, "0");
-    const day = String(now.getUTCDate()).padStart(2, "0");
+    const month = String(now.getUTCMonth() + 1).padStart(2, '0');
+    const day = String(now.getUTCDate()).padStart(2, '0');
     const year = now.getUTCFullYear();
-    const hours = String(now.getUTCHours()).padStart(2, "0");
-    const minutes = String(now.getUTCMinutes()).padStart(2, "0");
-    const seconds = String(now.getUTCSeconds()).padStart(2, "0");
+    const hours = String(now.getUTCHours()).padStart(2, '0');
+    const minutes = String(now.getUTCMinutes()).padStart(2, '0');
+    const seconds = String(now.getUTCSeconds()).padStart(2, '0');
 
     return `${month}${day}${year}-${hours}${minutes}${seconds}`;
   }, []);
@@ -57,7 +57,7 @@ const QRCodeGenerator: React.FC = () => {
         setLastGenerated(Date.now());
       }
     } catch (error) {
-      console.error("Error generating QR code value:", error);
+      console.error('Error generating QR code value:', error);
     }
   }, [
     formatCurrentDate,
@@ -69,7 +69,7 @@ const QRCodeGenerator: React.FC = () => {
 
   // Event handler for visibility change
   const handleVisibilityChange = useCallback((): void => {
-    if (document.visibilityState === "visible" && isQrCodeExpired()) {
+    if (document.visibilityState === 'visible' && isQrCodeExpired()) {
       generateQrValue();
     }
   }, [generateQrValue, isQrCodeExpired]);
@@ -90,14 +90,14 @@ const QRCodeGenerator: React.FC = () => {
     const intervalId = setInterval(generateQrValue, REFRESH_INTERVAL_MS);
 
     // Add event listeners for visibility change and focus
-    document.addEventListener("visibilitychange", handleVisibilityChange);
-    window.addEventListener("focus", handleFocus);
+    document.addEventListener('visibilitychange', handleVisibilityChange);
+    window.addEventListener('focus', handleFocus);
 
     // Clean up interval and event listeners on component unmount
     return () => {
       clearInterval(intervalId);
-      document.removeEventListener("visibilitychange", handleVisibilityChange);
-      window.removeEventListener("focus", handleFocus);
+      document.removeEventListener('visibilitychange', handleVisibilityChange);
+      window.removeEventListener('focus', handleFocus);
     };
   }, [generateQrValue, handleVisibilityChange, handleFocus]); // Added dependencies
 
