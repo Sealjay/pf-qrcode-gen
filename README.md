@@ -27,13 +27,13 @@ This project is hosted on [Azure Static Web Apps](https://docs.microsoft.com/en-
 ## Implementation Details
 The QR code follows this format:
 ```
-[MemberID]/mobile/[MMDDYYYy-HHMMSS]
+[MemberID]/mobile/[MMDDYYYY-HHMMSS]
 ```
 
 Where:
 - `MemberID` is the unique member identifier
 - `mobile` is a fixed indicator for platform type
-- `MMDDYYYy-HHMMSS` is the UTC timestamp in month-day-year-hour-minute-second format
+- `MMDDYYYY-HHMMSS` is the UTC timestamp in month-day-year-hour-minute-second format
 
 The timestamp refreshes every 30 minutes to ensure security while allowing enough time for scanning.
 
