@@ -38,6 +38,12 @@ const QRCodeGenerator: React.FC<QRCodeGeneratorProps> = () => {
     return `${month}${day}${year}-${hours}${minutes}${seconds}`;
   };
 
+  // Function to check if the last generated time is more than 30 minutes ago
+  const shouldGenerateNewQr = (): boolean => {
+    const now = Date.now();
+    return now - lastGenerated > 30 * 60 * 1000;
+  };
+
   // Generate the QR code value with UTC timestamp
   const generateQrValue = (): void => {
     try {
@@ -58,14 +64,16 @@ const QRCodeGenerator: React.FC<QRCodeGeneratorProps> = () => {
 
   // Event handler for visibility change
   const handleVisibilityChange = (): void => {
-    if (document.visibilityState === "visible") {
+    if (document.visibilityState === "visible" && shouldGenerateNewQr()) {
       generateQrValue();
     }
   };
 
   // Event handler for focus
   const handleFocus = (): void => {
-    generateQrValue();
+    if (shouldGenerateNewQr()) {
+      generateQrValue();
+    }
   };
 
   // Initialize QR code and set up refresh interval
@@ -73,13 +81,12 @@ const QRCodeGenerator: React.FC<QRCodeGeneratorProps> = () => {
     // Generate initial QR code
     generateQrValue();
 
-    // Update every minute
+    // Update every 30 minutes
     const intervalId = setInterval(() => {
-      const now = Date.now();
-      if (now - lastGenerated > 30 * 60 * 1000) {
+      if (shouldGenerateNewQr()) {
         generateQrValue();
       }
-    }, 60000);
+    }, 30 * 60 * 1000);
 
     // Add event listeners for visibility change and focus
     document.addEventListener("visibilitychange", handleVisibilityChange);
