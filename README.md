@@ -13,12 +13,12 @@
 [![Vite](https://img.shields.io/badge/--3178C6?logo=vite&logoColor=ffffff)](https://vitejs.dev/)
 
 ## Overview
-The PF QR Code Generator is a web app that creates a digital club pass with a dynamically updating QR code. Built with React and TypeScript, this app simulates a fitness club membership card with a QR code that refreshes every minute for security.
+The PF QR Code Generator is a web app that creates a digital club pass with a dynamically updating QR code. Built with React and TypeScript, this app simulates a fitness club membership card with a QR code that refreshes every 30 minutes for security.
 
 This project is hosted on [Azure Static Web Apps](https://docs.microsoft.com/en-us/azure/static-web-apps/overview?WT.mc_id=AI-MVP-5004204) and displays a club pass with member information and a timestamp-based QR code.
 
 ## Features
-- 🔄 Auto-refreshing QR code (updates every minute)
+- 🔄 Auto-refreshing QR code (updates every 30 minutes)
 - 🕒 UTC timestamp encoding for secure access
 - 📱 Mobile-friendly membership card display
 - 🆔 Member ID and personal information display
@@ -35,7 +35,7 @@ Where:
 - `mobile` is a fixed indicator for platform type
 - `MMDDYYYy-HHMMSS` is the UTC timestamp in month-day-year-hour-minute-second format
 
-The timestamp refreshes every 60 seconds to ensure security while allowing enough time for scanning.
+The timestamp refreshes every 30 minutes to ensure security while allowing enough time for scanning.
 
 ## Tech Stack
 - React
