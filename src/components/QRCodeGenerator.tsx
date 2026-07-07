@@ -17,8 +17,8 @@ const QRCodeGenerator: React.FC = () => {
   const formatCurrentDate = useCallback((): string => {
     const now = new Date();
     return now.toLocaleDateString('en-US', {
-      month: 'long',
-      day: 'numeric',
+      month: 'short',
+      day: '2-digit',
       year: 'numeric',
     });
   }, []);
@@ -50,7 +50,7 @@ const QRCodeGenerator: React.FC = () => {
         const formattedDate = formatCurrentDate();
         setCurrentDate(formattedDate);
 
-        // Format: MEMBER_ID/mobile/05132025-162158 (now using UTC)
+        // Format: [memberId]/mobile/MMDDYYYY-HHMMSS (UTC)
         const formattedTimeForQr = formatTimeForQrCodeInUTC();
         const value = `${memberId}/mobile/${formattedTimeForQr}`;
         setQrValue(value);
@@ -105,7 +105,21 @@ const QRCodeGenerator: React.FC = () => {
     <div className={styles.membershipCard}>
       <div className={styles.header}>
         <div className={styles.backButton}>
-          <span>←</span>
+          <svg
+            width="16"
+            height="14"
+            viewBox="0 0 16 14"
+            fill="none"
+            aria-hidden="true"
+          >
+            <path
+              d="M14 7H2.5M2.5 7L7.5 2M2.5 7l5 5"
+              stroke="#fff"
+              strokeWidth="2"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+            />
+          </svg>
         </div>
         <h2>Club Pass</h2>
       </div>
@@ -124,7 +138,7 @@ const QRCodeGenerator: React.FC = () => {
           {qrValue ? (
             <QRCode
               value={qrValue}
-              size={200}
+              size={220}
               level="H"
               className={styles.qrCode}
             />
@@ -144,11 +158,30 @@ const QRCodeGenerator: React.FC = () => {
       </div>
 
       <p className={styles.message}>
-        Have an awesome workout, Chris! You got this!
+        Have an awesome workout, Chris!
+        <br />
+        You got this!
       </p>
 
       <button type="button" className={styles.referButton}>
-        <span className={styles.referIcon}>👥</span> Refer a Friend
+        <svg
+          className={styles.referIcon}
+          width="22"
+          height="22"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          strokeWidth="2"
+          strokeLinecap="round"
+          strokeLinejoin="round"
+          aria-hidden="true"
+        >
+          <path d="M20.5 8.9A9 9 0 1 1 15.1 3.5" />
+          <circle cx="12" cy="10" r="3.2" />
+          <path d="M6.2 18.9a7.5 7.5 0 0 1 11.6 0" />
+          <path d="M18.6 2.8v5.2M16 5.4h5.2" />
+        </svg>
+        Refer a Friend
       </button>
     </div>
   );

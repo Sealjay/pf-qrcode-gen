@@ -8,7 +8,12 @@
   padding: 0;
   margin: 0;
   box-sizing: border-box;
-  background-color: #2e1a47;
+  background: radial-gradient(
+    ellipse 130% 55% at 50% 40%,
+    #2e3184 0%,
+    #2a2468 50%,
+    #171141 100%
+  );
 }
 
 /*
