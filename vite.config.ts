@@ -1,7 +1,10 @@
-import react from '@vitejs/plugin-react';
+import preact from '@preact/preset-vite';
 import { defineConfig } from 'vite';
 
 // https://vite.dev/config/
 export default defineConfig({
-  plugins: [react()],
+  plugins: [preact()],
+  build: {
+    modulePreload: { polyfill: false },
+  },
 });

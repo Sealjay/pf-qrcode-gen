@@ -1,6 +1,6 @@
 import type React from 'react';
-import { useCallback, useEffect, useState } from 'react';
-import QRCode from 'react-qr-code';
+import { useCallback, useEffect, useMemo, useState } from 'react';
+import { encode } from 'uqr';
 import styles from './QRCodeGenerator.module.css';
 
 // Constants
@@ -66,6 +66,22 @@ const QRCodeGenerator: React.FC = () => {
     memberId,
     qrValue,
   ]);
+
+  // QR module matrix rendered as a single SVG path (quiet zone comes
+  // from the white card padding, so no border modules are needed)
+  const qrModules = useMemo(() => {
+    if (!qrValue) return null;
+    const { size, data } = encode(qrValue, { ecc: 'H', border: 0 });
+    let path = '';
+    data.forEach((row, y) => {
+      row.forEach((dark, x) => {
+        if (dark) {
+          path += `M${x} ${y}h1v1h-1z`;
+        }
+      });
+    });
+    return { size, path };
+  }, [qrValue]);
 
   // Event handler for visibility change
   const handleVisibilityChange = useCallback((): void => {
@@ -135,13 +151,18 @@ const QRCodeGenerator: React.FC = () => {
         <div className={styles.cogBottomRight} />
 
         <div className={styles.qrCodeWrapper}>
-          {qrValue ? (
-            <QRCode
-              value={qrValue}
-              size={220}
-              level="H"
+          {qrModules ? (
+            <svg
               className={styles.qrCode}
-            />
+              width={220}
+              height={220}
+              viewBox={`0 0 ${qrModules.size} ${qrModules.size}`}
+              shapeRendering="crispEdges"
+              role="img"
+              aria-label="Club pass QR code"
+            >
+              <path d={qrModules.path} fill="#000" />
+            </svg>
           ) : (
             <p className={styles.loading}>Loading QR code...</p>
           )}
