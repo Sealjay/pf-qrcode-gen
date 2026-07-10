@@ -228,6 +228,10 @@
   font-family: "Barlow", sans-serif;
 }
 
+.referButtonActive {
+  font-weight: 700;
+}
+
 .referIcon {
   margin-right: 8px;
   flex-shrink: 0;
