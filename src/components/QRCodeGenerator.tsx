@@ -12,6 +12,8 @@ const QRCodeGenerator: React.FC = () => {
   const [memberId] = useState<string>('MEMBER_ID');
   const [name] = useState<string>('Chris Lloyd-Jones');
   const [lastGenerated, setLastGenerated] = useState<number>(Date.now());
+  // false = normal (gym) payload, true = member-id-only (spa scanner)
+  const [scanMode, setScanMode] = useState<boolean>(false);
 
   // Function to format the current date (Month DD, YYYY)
   const formatCurrentDate = useCallback((): string => {
@@ -50,9 +52,11 @@ const QRCodeGenerator: React.FC = () => {
         const formattedDate = formatCurrentDate();
         setCurrentDate(formattedDate);
 
-        // Format: [memberId]/mobile/MMDDYYYY-HHMMSS (UTC)
-        const formattedTimeForQr = formatTimeForQrCodeInUTC();
-        const value = `${memberId}/mobile/${formattedTimeForQr}`;
+        // Normal: [memberId]/mobile/MMDDYYYY-HHMMSS (UTC)
+        // Scan mode: [memberId] only (spa scanner rejects the /mobile/date suffix)
+        const value = scanMode
+          ? memberId
+          : `${memberId}/mobile/${formatTimeForQrCodeInUTC()}`;
         setQrValue(value);
         setLastGenerated(Date.now());
       }
@@ -65,7 +69,22 @@ const QRCodeGenerator: React.FC = () => {
     isQrCodeExpired,
     memberId,
     qrValue,
+    scanMode,
   ]);
+
+  // Toggle between normal and spa (member-id-only) payloads, regenerating the
+  // QR immediately rather than waiting for the 30-minute expiry window.
+  const toggleScanMode = useCallback((): void => {
+    setScanMode((prev) => {
+      const next = !prev;
+      const value = next
+        ? memberId
+        : `${memberId}/mobile/${formatTimeForQrCodeInUTC()}`;
+      setQrValue(value);
+      setLastGenerated(Date.now());
+      return next;
+    });
+  }, [memberId, formatTimeForQrCodeInUTC]);
 
   // QR module matrix rendered as a single SVG path (quiet zone comes
   // from the white card padding, so no border modules are needed)
@@ -184,7 +203,14 @@ const QRCodeGenerator: React.FC = () => {
         You got this!
       </p>
 
-      <button type="button" className={styles.referButton}>
+      <button
+        type="button"
+        className={`${styles.referButton} ${
+          scanMode ? styles.referButtonActive : ''
+        }`}
+        onClick={toggleScanMode}
+        aria-pressed={scanMode}
+      >
         <svg
           className={styles.referIcon}
           width="22"
@@ -197,10 +223,19 @@ const QRCodeGenerator: React.FC = () => {
           strokeLinejoin="round"
           aria-hidden="true"
         >
-          <path d="M20.5 8.9A9 9 0 1 1 15.1 3.5" />
-          <circle cx="12" cy="10" r="3.2" />
-          <path d="M6.2 18.9a7.5 7.5 0 0 1 11.6 0" />
-          <path d="M18.6 2.8v5.2M16 5.4h5.2" />
+          {scanMode ? (
+            <>
+              <circle cx="11" cy="11" r="7" />
+              <path d="M21 21l-4.3-4.3" />
+            </>
+          ) : (
+            <>
+              <path d="M20.5 8.9A9 9 0 1 1 15.1 3.5" />
+              <circle cx="12" cy="10" r="3.2" />
+              <path d="M6.2 18.9a7.5 7.5 0 0 1 11.6 0" />
+              <path d="M18.6 2.8v5.2M16 5.4h5.2" />
+            </>
+          )}
         </svg>
         Refer a Friend
       </button>
