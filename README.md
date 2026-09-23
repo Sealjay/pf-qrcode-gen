@@ -1,97 +1,92 @@
 # PF QR Code Generator
-> A React app that generates a dynamic QR code for club pass access.
 
-<!-- Javascript -->
-[![JavaScript Style Guide](https://img.shields.io/badge/code_style-standard-brightgreen.svg)](https://standardjs.com)
-[![Commitizen friendly](https://img.shields.io/badge/commitizen-friendly-brightgreen.svg)](http://commitizen.github.io/cz-cli/)
-![GitHub issues](https://img.shields.io/github/issues/sealjay/pf-qrcode-gen)
+A web version of the Planet Fitness club pass, for members who can't install the app.
+
 ![GitHub](https://img.shields.io/github/license/sealjay/pf-qrcode-gen)
-![GitHub Repo stars](https://img.shields.io/github/stars/sealjay/pf-qrcode-gen?style=social)
 [![TypeScript](https://img.shields.io/badge/--3178C6?logo=typescript&logoColor=ffffff)](https://www.typescriptlang.org/)
-[![Azure](https://img.shields.io/badge/--3178C6?logo=microsoftazure&logoColor=ffffff)](https://learn.microsoft.com/en-us/azure/developer/azure-developer-cli/?WT.mc_id=AI-MVP-5004204)
-[![React](https://img.shields.io/badge/--3178C6?logo=react&logoColor=ffffff)](https://reactjs.org/)
-[![Vite](https://img.shields.io/badge/--3178C6?logo=vite&logoColor=ffffff)](https://vitejs.dev/)
+[![Preact](https://img.shields.io/badge/--673AB8?logo=preact&logoColor=ffffff)](https://preactjs.com/)
+[![Vite](https://img.shields.io/badge/--646CFF?logo=vite&logoColor=ffffff)](https://vite.dev/)
+[![Azure](https://img.shields.io/badge/--0078D4?logo=microsoftazure&logoColor=ffffff)](https://learn.microsoft.com/azure/static-web-apps/overview?WT.mc_id=AI-MVP-5004204)
 
-## Overview
-The PF QR Code Generator is a web app that creates a digital club pass with a dynamically updating QR code. Built with React and TypeScript, this app simulates a fitness club membership card with a QR code that refreshes every 30 minutes for security.
+<img src="docs/screenshot.png" alt="The club pass with a demo member, a QR code and the Refer a Friend button" width="300" />
 
-This project is hosted on [Azure Static Web Apps](https://docs.microsoft.com/en-us/azure/static-web-apps/overview?WT.mc_id=AI-MVP-5004204) and displays a club pass with member information and a timestamp-based QR code.
+## Why this exists
 
-## Features
-- 🔄 Auto-refreshing QR code (updates every 30 minutes)
-- 🕒 UTC timestamp encoding for secure access
-- 📱 Mobile-friendly membership card display
-- 🆔 Member ID and personal information display
-- 🎨 Clean, modern interface
+I have a Planet Fitness membership, but the Planet Fitness app isn't in the UK App Store, so I can't install it on my phone. The front desk checks you in by scanning the QR code on the app's Club Pass screen. This app shows the same pass in a browser, so I can add it to my home screen and scan in like everyone else.
 
-## Implementation Details
-The QR code follows this format:
+## How it works
+
+The check-in QR code holds your member ID and a UTC timestamp:
+
 ```
-[MemberID]/mobile/[MMDDYYYY-HHMMSS]
+[memberId]/mobile/MMDDYYYY-HHMMSS
 ```
 
-Where:
-- `MemberID` is the unique member identifier
-- `mobile` is a fixed indicator for platform type
-- `MMDDYYYY-HHMMSS` is the UTC timestamp in month-day-year-hour-minute-second format
+The scanners accept a code for about two hours after its timestamp. The page makes a new timestamp every 30 minutes and whenever you come back to it, so the code on screen is always fresh.
 
-The timestamp refreshes every 30 minutes to ensure security while allowing enough time for scanning.
+**Spa mode.** The spa and HydroMassage scanners won't accept the timestamped code; they want the bare member ID. Tap **Refer a Friend** and the QR switches to just your member ID. The label goes bold and the icon turns into a magnifying glass. Tap it again to go back to the gym code. The toggle hides behind the real app's button, so the pass still looks right at the front desk.
 
-## Tech Stack
-- React
-- TypeScript
-- Vite
-- CSS Modules
-- Azure Static Web Apps
-- react-qr-code library
-- Biome (linting and formatting)
+## Get your member ID
 
-## Licensing
-This project is available under the [MIT License](./LICENCE).
+You need the official app once, on any device that has it: a friend's phone, an Android phone, or an iPhone signed in to a US App Store account.
 
-## Getting Started
+1. Sign in to the Planet Fitness app with your account and open **Club Pass**.
+2. Take a screenshot of the QR code.
+3. Decode it with any QR reader. The text looks like `ABC123XYZ456789/mobile/09212026-181500`.
+4. Your member ID is everything before `/mobile/`.
 
-### Prerequisites
-- Node.js (v16+)
-- npm or yarn
-- [Azure Static Web Apps CLI](https://azure.github.io/static-web-apps-cli/docs/use/install) (for local development)
+The ID changes every now and then. If your pass stops scanning, decode a fresh screenshot and update the ID.
 
-### Installation
-1. Clone the repo
-   ```bash
-   git clone https://github.com/sealjay/pf-qrcode-gen.git
-   cd pf-qrcode-gen
-   ```
+## Try it locally
 
-2. Install dependencies
-   ```bash
-   npm install
-   # or
-   yarn
-   ```
+You need Node.js 22.18 or later.
 
-3. Start the development server
-   ```bash
-   npm run dev
-   # or
-   yarn dev
-   # or with SWA CLI
-   swa start
-   ```
+```bash
+git clone https://github.com/sealjay/pf-qrcode-gen.git
+cd pf-qrcode-gen
+npm install
+cp .env.example .env.local   # then put your member ID and name in it
+npm run dev
+```
 
-4. Open [http://localhost:5173](http://localhost:5173) in your browser if you are using Vite, or [http://localhost:4280](http://localhost:4280) if you are using the SWA CLI.
+Open <http://localhost:5173>. To try it on your phone over Wi-Fi, run `npm run dev -- --host` and open the network URL it prints.
 
-## Deployment
-This app is set up to deploy to Azure Static Web Apps. The GitHub Actions workflow will handle deployment when changes are pushed to the main branch.
+## Deploy your own
 
-## Contact
-Feel free to [open an issue](https://github.com/sealjay/pf-qrcode-gen/issues) for bugs or feature requests.
+I host mine on [Azure Static Web Apps](https://learn.microsoft.com/azure/static-web-apps/overview?WT.mc_id=AI-MVP-5004204) on the Free plan, behind a GitHub login that only lets me in.
 
-## Contributing
-Contributions are welcome! This repo uses [GitHub flow](https://guides.github.com/introduction/flow/) with [Commitizen](https://github.com/commitizen/cz-cli) for semantic commits.
+1. Fork this repo.
+2. In the Azure portal, create a Static Web App on the Free plan and choose **Other** as the deployment source.
+3. Copy its deployment token (**Overview → Manage deployment token**) and add it to your fork as the Actions secret `AZURE_STATIC_WEB_APPS_API_TOKEN`.
+4. Add two more Actions secrets: `VITE_MEMBER_ID` and `VITE_MEMBER_NAME`.
+5. Run the **Azure Static Web Apps CI/CD** workflow from the Actions tab, or push to `main`.
+6. In the Static Web App, open **Role management**, choose **Invite**, pick GitHub, enter your GitHub username and give it the role `owner`. Open the invite link and accept it.
+7. Open the site on your phone, sign in with GitHub, then use **Share → Add to Home Screen**.
 
-1. Fork the project
-2. Create your feature branch (`git checkout -b feature/qr-improvements`)
-3. Commit changes using Commitizen (`git cz`)
-4. Push to your branch (`git push origin feature/qr-improvements`)
-5. Open a Pull Request
+### Keep it private
+
+Your member ID is baked into the site's JavaScript, and anyone who can load the page can check in as you. `staticwebapp.config.json` only lets GitHub users with the `owner` role in, and search engines are told not to index the page. Don't host it anywhere without a login in front of it.
+
+## Troubleshooting
+
+- **The pass won't scan.** Your member ID has probably changed; see [Get your member ID](#get-your-member-id). Also check your phone's clock, because the timestamp comes from your phone.
+- **The spa scanner rejects it.** Tap **Refer a Friend** to switch to spa mode.
+- **The page says "Almost there".** The build didn't get `VITE_MEMBER_ID` and `VITE_MEMBER_NAME`. Check `.env.local` locally, or the Actions secrets on your fork, then rebuild.
+
+## Development
+
+```bash
+npm run lint   # Biome
+npm test       # the QR payload format
+npm run build  # tests, type check, then Vite build
+```
+
+It's built with Preact, [uqr](https://github.com/unjs/uqr) for the QR matrix, Vite and Biome. The whole app is one component, `src/components/QRCodeGenerator.tsx`; the payload format lives in `src/pass.ts`.
+
+## Disclaimer
+
+This is a personal project. It isn't affiliated with or endorsed by Planet Fitness. Planet Fitness, PF Black Card and the Planet Fitness logo are trademarks of Planet Fitness Franchising, LLC. Only use it with your own active membership. It may stop working if Planet Fitness changes its check-in format.
+
+## Licence
+
+[MIT](./LICENCE)

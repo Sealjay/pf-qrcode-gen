@@ -17,4 +17,20 @@ body {
 #root {
   width: 100%;
   min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  background: radial-gradient(
+    ellipse 130% 55% at 50% 40%,
+    #2e3184 0%,
+    #2a2468 50%,
+    #171141 100%
+  );
+}
+
+@media (min-width: 480px) {
+  #root {
+    padding: 1rem;
+  }
 }

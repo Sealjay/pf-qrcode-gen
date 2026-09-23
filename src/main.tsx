@@ -1,19 +1,5 @@
-import { StrictMode } from 'react';
-import { createRoot } from 'react-dom/client';
+import { render } from 'preact';
 import './index.css';
-import App from './App';
-import ErrorBoundary from './components/ErrorBoundary';
+import QRCodeGenerator from './components/QRCodeGenerator';
 
-const rootElement = document.getElementById('root');
-
-if (!rootElement) {
-  throw new Error('Failed to find the root element');
-}
-
-createRoot(rootElement).render(
-  <StrictMode>
-    <ErrorBoundary>
-      <App />
-    </ErrorBoundary>
-  </StrictMode>
-);
+render(<QRCodeGenerator />, document.getElementById('root') as HTMLElement);

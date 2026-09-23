@@ -1,5 +1,3 @@
-/* Styles moved and merged below */
-
 /* Planet Fitness membership card styles */
 .membershipCard {
   width: 100%;
@@ -80,14 +78,14 @@
 
 .qrCodeWrapper {
   background-color: white;
-  padding: 1.5rem; /* Increased from 1rem to make QR code a bit larger */
-  border-radius: 12px; /* Increased from 8px for a softer look */
+  padding: 1.5rem;
+  border-radius: 12px;
   display: flex;
   justify-content: center;
   align-items: center;
   position: relative;
   z-index: 10;
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15); /* Added subtle shadow for depth */
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
 }
 
 .qrCode {
@@ -198,10 +196,6 @@
   line-height: 0;
 }
 
-.membershipInfo h3 {
-  display: none;
-}
-
 .message {
   font-size: 1rem;
   font-weight: 600;
@@ -237,11 +231,14 @@
   flex-shrink: 0;
 }
 
-.loading {
-  padding: 2rem;
+.setup {
+  margin: auto 0;
   text-align: center;
-  color: #2e1a47;
-  /* Kept color from second definition instead of var(--text-color) from first definition */
+  line-height: 1.4;
+}
+
+.setup h1 {
+  font-family: "Roboto Slab", serif;
 }
 
 .membershipText {

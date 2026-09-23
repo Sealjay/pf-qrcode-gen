@@ -2,7 +2,7 @@
   "$schema": "https://json.schemastore.org/staticwebapp.config.json",
   "routes": [
     { "route": "/.auth/login/aad", "statusCode": 404 },
-    { "route": "/*", "allowedRoles": ["sealjay"] }
+    { "route": "/*", "allowedRoles": ["owner"] }
   ],
   "responseOverrides": {
     "401": { "statusCode": 302, "redirect": "/.auth/login/github" }

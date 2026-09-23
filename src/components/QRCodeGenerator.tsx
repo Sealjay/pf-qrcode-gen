@@ -1,96 +1,43 @@
-import type React from 'react';
-import { useCallback, useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'preact/hooks';
 import { encode } from 'uqr';
+import { qrPayload } from '../pass.ts';
 import styles from './QRCodeGenerator.module.css';
 
-// Constants
-const REFRESH_INTERVAL_MS = 30 * 60 * 1000; // 30 minutes in milliseconds
+// Baked in at build time from .env.local or CI secrets (see README)
+const MEMBER_ID: string | undefined = import.meta.env.VITE_MEMBER_ID;
+const MEMBER_NAME: string | undefined = import.meta.env.VITE_MEMBER_NAME;
 
-const QRCodeGenerator: React.FC = () => {
-  const [qrValue, setQrValue] = useState<string>('');
-  const [currentDate, setCurrentDate] = useState<string>('');
-  const [memberId] = useState<string>('MEMBER_ID');
-  const [name] = useState<string>('Chris Lloyd-Jones');
-  const [lastGenerated, setLastGenerated] = useState<number>(Date.now());
+// Passes scan for ~2 hours after their timestamp; 30 minutes stays well inside
+const REFRESH_INTERVAL_MS = 30 * 60 * 1000;
+
+export default function QRCodeGenerator() {
+  const [now, setNow] = useState(() => new Date());
   // false = normal (gym) payload, true = member-id-only (spa scanner)
-  const [scanMode, setScanMode] = useState<boolean>(false);
+  const [scanMode, setScanMode] = useState(false);
 
-  // Function to format the current date (Month DD, YYYY)
-  const formatCurrentDate = useCallback((): string => {
-    const now = new Date();
-    return now.toLocaleDateString('en-US', {
-      month: 'short',
-      day: '2-digit',
-      year: 'numeric',
-    });
+  // Fresh timestamp every 30 minutes and whenever the page comes back into view
+  useEffect(() => {
+    const refresh = () => {
+      if (document.visibilityState === 'visible') setNow(new Date());
+    };
+    const intervalId = setInterval(refresh, REFRESH_INTERVAL_MS);
+    document.addEventListener('visibilitychange', refresh);
+    window.addEventListener('focus', refresh);
+    return () => {
+      clearInterval(intervalId);
+      document.removeEventListener('visibilitychange', refresh);
+      window.removeEventListener('focus', refresh);
+    };
   }, []);
-
-  // Function to format the current time for QR code data in UTC
-  const formatTimeForQrCodeInUTC = useCallback((): string => {
-    const now = new Date();
-    const month = String(now.getUTCMonth() + 1).padStart(2, '0');
-    const day = String(now.getUTCDate()).padStart(2, '0');
-    const year = now.getUTCFullYear();
-    const hours = String(now.getUTCHours()).padStart(2, '0');
-    const minutes = String(now.getUTCMinutes()).padStart(2, '0');
-    const seconds = String(now.getUTCSeconds()).padStart(2, '0');
-
-    return `${month}${day}${year}-${hours}${minutes}${seconds}`;
-  }, []);
-
-  // Function to check if the last generated time is more than 30 minutes ago
-  const isQrCodeExpired = useCallback((): boolean => {
-    const now = Date.now();
-    return now - lastGenerated > REFRESH_INTERVAL_MS;
-  }, [lastGenerated]);
-
-  // Generate the QR code value with UTC timestamp
-  const generateQrValue = useCallback((): void => {
-    try {
-      // Only regenerate if it's time to do so
-      if (!qrValue || isQrCodeExpired()) {
-        const formattedDate = formatCurrentDate();
-        setCurrentDate(formattedDate);
-
-        // Normal: [memberId]/mobile/MMDDYYYY-HHMMSS (UTC)
-        // Scan mode: [memberId] only (spa scanner rejects the /mobile/date suffix)
-        const value = scanMode
-          ? memberId
-          : `${memberId}/mobile/${formatTimeForQrCodeInUTC()}`;
-        setQrValue(value);
-        setLastGenerated(Date.now());
-      }
-    } catch (error) {
-      console.error('Error generating QR code value:', error);
-    }
-  }, [
-    formatCurrentDate,
-    formatTimeForQrCodeInUTC,
-    isQrCodeExpired,
-    memberId,
-    qrValue,
-    scanMode,
-  ]);
-
-  // Toggle between normal and spa (member-id-only) payloads, regenerating the
-  // QR immediately rather than waiting for the 30-minute expiry window.
-  const toggleScanMode = useCallback((): void => {
-    setScanMode((prev) => {
-      const next = !prev;
-      const value = next
-        ? memberId
-        : `${memberId}/mobile/${formatTimeForQrCodeInUTC()}`;
-      setQrValue(value);
-      setLastGenerated(Date.now());
-      return next;
-    });
-  }, [memberId, formatTimeForQrCodeInUTC]);
 
   // QR module matrix rendered as a single SVG path (quiet zone comes
   // from the white card padding, so no border modules are needed)
   const qrModules = useMemo(() => {
-    if (!qrValue) return null;
-    const { size, data } = encode(qrValue, { ecc: 'H', border: 0 });
+    if (!MEMBER_ID) return null;
+    const { size, data } = encode(qrPayload(MEMBER_ID, now, scanMode), {
+      ecc: 'H',
+      border: 0,
+    });
     let path = '';
     data.forEach((row, y) => {
       row.forEach((dark, x) => {
@@ -100,41 +47,21 @@ const QRCodeGenerator: React.FC = () => {
       });
     });
     return { size, path };
-  }, [qrValue]);
+  }, [now, scanMode]);
 
-  // Event handler for visibility change
-  const handleVisibilityChange = useCallback((): void => {
-    if (document.visibilityState === 'visible' && isQrCodeExpired()) {
-      generateQrValue();
-    }
-  }, [generateQrValue, isQrCodeExpired]);
-
-  // Event handler for focus
-  const handleFocus = useCallback((): void => {
-    if (isQrCodeExpired()) {
-      generateQrValue();
-    }
-  }, [generateQrValue, isQrCodeExpired]);
-
-  // Initialize QR code and set up refresh interval
-  useEffect(() => {
-    // Generate initial QR code
-    generateQrValue();
-
-    // Update every 30 minutes
-    const intervalId = setInterval(generateQrValue, REFRESH_INTERVAL_MS);
-
-    // Add event listeners for visibility change and focus
-    document.addEventListener('visibilitychange', handleVisibilityChange);
-    window.addEventListener('focus', handleFocus);
-
-    // Clean up interval and event listeners on component unmount
-    return () => {
-      clearInterval(intervalId);
-      document.removeEventListener('visibilitychange', handleVisibilityChange);
-      window.removeEventListener('focus', handleFocus);
-    };
-  }, [generateQrValue, handleVisibilityChange, handleFocus]); // Added dependencies
+  if (!qrModules || !MEMBER_NAME) {
+    return (
+      <div className={styles.membershipCard}>
+        <div className={styles.setup}>
+          <h1>Almost there</h1>
+          <p>
+            Set <code>VITE_MEMBER_ID</code> and <code>VITE_MEMBER_NAME</code>,
+            then rebuild. The README explains where to find your member ID.
+          </p>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className={styles.membershipCard}>
@@ -160,8 +87,14 @@ const QRCodeGenerator: React.FC = () => {
       </div>
 
       <div className={styles.memberInfo}>
-        <h1>{name}</h1>
-        <p className={styles.date}>{currentDate}</p>
+        <h1>{MEMBER_NAME}</h1>
+        <p className={styles.date}>
+          {now.toLocaleDateString('en-US', {
+            month: 'short',
+            day: '2-digit',
+            year: 'numeric',
+          })}
+        </p>
       </div>
 
       <div className={styles.qrCodeContainer}>
@@ -170,25 +103,21 @@ const QRCodeGenerator: React.FC = () => {
         <div className={styles.cogBottomRight} />
 
         <div className={styles.qrCodeWrapper}>
-          {qrModules ? (
-            <svg
-              className={styles.qrCode}
-              width={220}
-              height={220}
-              viewBox={`0 0 ${qrModules.size} ${qrModules.size}`}
-              shapeRendering="crispEdges"
-              role="img"
-              aria-label="Club pass QR code"
-            >
-              <path d={qrModules.path} fill="#000" />
-            </svg>
-          ) : (
-            <p className={styles.loading}>Loading QR code...</p>
-          )}
+          <svg
+            className={styles.qrCode}
+            width={220}
+            height={220}
+            viewBox={`0 0 ${qrModules.size} ${qrModules.size}`}
+            shapeRendering="crispEdges"
+            role="img"
+            aria-label="Club pass QR code"
+          >
+            <path d={qrModules.path} fill="#000" />
+          </svg>
         </div>
       </div>
 
-      <p className={styles.memberId}>{memberId}</p>
+      <p className={styles.memberId}>{MEMBER_ID}</p>
 
       <div className={styles.membershipInfo}>
         <h2 className={styles.cardType}>
@@ -198,17 +127,21 @@ const QRCodeGenerator: React.FC = () => {
       </div>
 
       <p className={styles.message}>
-        Have an awesome workout, Chris!
+        Have an awesome workout, {MEMBER_NAME.split(' ')[0]}!
         <br />
         You got this!
       </p>
 
+      {/* Looks like the real app's button; secretly toggles spa mode */}
       <button
         type="button"
         className={`${styles.referButton} ${
           scanMode ? styles.referButtonActive : ''
         }`}
-        onClick={toggleScanMode}
+        onClick={() => {
+          setScanMode((mode) => !mode);
+          setNow(new Date());
+        }}
         aria-pressed={scanMode}
       >
         <svg
@@ -241,6 +174,4 @@ const QRCodeGenerator: React.FC = () => {
       </button>
     </div>
   );
-};
-
-export default QRCodeGenerator;
+}

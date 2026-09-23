@@ -1,8 +1,8 @@
 {
-  "name": "swa-pfqrcodegen",
+  "name": "pf-qrcode-gen",
   "private": true,
   "version": "0.0.0",
-  "description": "A React app that generates a dynamic QR code for club pass access",
+  "description": "Web version of the Planet Fitness club pass, for members who can't get the app",
   "type": "module",
   "license": "MIT",
   "author": "Chris Lloyd-Jones",
@@ -12,14 +12,11 @@
   },
   "scripts": {
     "dev": "vite",
-    "build": "tsc && vite build",
+    "build": "node --test && tsc && vite build",
     "lint": "biome check .",
     "lint:fix": "biome check --write .",
-    "format": "biome format .",
-    "format:fix": "biome format --write .",
     "preview": "vite preview",
-    "typecheck": "tsc --noEmit",
-    "test": "echo \"No tests configured\" && exit 0"
+    "test": "node --test"
   },
   "dependencies": {
     "preact": "^10.29.3",
@@ -29,12 +26,10 @@
     "@babel/core": "^7.29.6",
     "@biomejs/biome": "^2.5.2",
     "@preact/preset-vite": "^2.10.5",
-    "@types/react": "^19.2.17",
-    "@types/react-dom": "^19.2.3",
     "typescript": "^6.0.3",
     "vite": "^7.3.6"
   },
   "engines": {
-    "node": ">=20.19.0"
+    "node": ">=22.18.0"
   }
 }
